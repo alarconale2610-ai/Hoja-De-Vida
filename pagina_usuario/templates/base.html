@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow | Gestión Profesional</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        /* Navbar con degradado de alta gama */
+        .navbar-custom {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            padding: 0.7rem 1rem;
+            border-bottom: 3px solid #0dcaf0;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            color: #fff !important;
+        }
+
+        .profile-wrapper {
+            display: flex;
+            align-items: center;
+            padding: 5px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .profile-wrapper:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .navbar-profile-img {
+            width: 38px;
+            height: 38px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #0dcaf0;
+            margin-left: 10px;
+        }
+
+        .nav-link {
+            color: #e0e0e0 !important;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #0dcaf0 !important;
+            transform: translateY(-2px);
+        }
+
+        .dropdown-menu {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            min-width: 220px;
+        }
+
+        .dropdown-item {
+            padding: 10px 20px;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+            color: #0dcaf0;
+        }
+
+        /* Estilo especial para items de Admin */
+        .admin-link {
+            color: #e67e22 !important; /* Color naranja/oro para resaltar */
+            font-weight: 600;
+        }
+
+        body { 
+            background-color: #f4f7f6; 
+            padding-top: 80px; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top shadow">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+                <i class="bi bi-check2-all text-info"></i> TASK<span class="text-info">FLOW</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Inicio</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'tasks' %}">Tareas</a>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <ul class="navbar-nav ms-auto align-items-center">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle profile-wrapper" href="#" id="userMenu" role="button" data-bs-toggle="dropdown">
+                                <div class="text-end d-none d-sm-block">
+                                    <small class="d-block text-info" style="font-size: 10px; text-transform: uppercase;">
+                                        {% if user.is_staff %}Administrador{% else %}Usuario{% endif %}
+                                    </small>
+                                    <span class="text-white">{{ user.username }}</span>
+                                </div>
+                                {% if user.datospersonales.foto %}
+                                    <img src="{{ user.datospersonales.foto.url }}" class="navbar-profile-img">
+                                {% else %}
+                                    <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=0dcaf0&color=fff" class="navbar-profile-img">
+                                {% endif %}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'hoja_vida' %}">
+                                        <i class="bi bi-person-badge me-2 text-info"></i> Mi Hoja de Vida
+                                    </a>
+                                </li>
+
+                                {% if user.is_staff %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li class="dropdown-header small text-uppercase fw-bold text-muted" style="font-size: 10px; padding-left: 20px;">Gestión del Sistema</li>
+                                    <li>
+                                        <a class="dropdown-item admin-link" href="/admin/" target="_blank">
+                                            <i class="bi bi-cpu me-2"></i> Panel de Control
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="/admin/pagina_usuario/datospersonales/" target="_blank">
+                                            <i class="bi bi-people me-2"></i> Gestionar Usuarios
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                                        <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'signin' %}">Ingresar</a>
+                        </li>
+                        <li class="nav-item ms-lg-3">
+                            <a class="btn btn-info btn-sm px-4 fw-bold rounded-pill shadow-sm" href="{% url 'signup' %}">
+                                Registrarse
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% block content %} 
+        {% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

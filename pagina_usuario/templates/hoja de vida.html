@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    :root {
+        --cv-dark: #2c3e50;
+        --cv-primary: #0dcaf0;
+        --cv-text: #505050;
+    }
+
+    body { background-color: #f0f2f5; }
+
+    .cv-wrapper {
+        max-width: 1100px;
+        margin: 40px auto;
+        background: white;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    /* Barra Lateral */
+    .cv-sidebar {
+        flex: 1;
+        min-width: 320px;
+        background: var(--cv-dark);
+        color: white;
+        padding: 40px;
+    }
+
+    .cv-profile-img {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        border: 5px solid rgba(255,255,255,0.1);
+        object-fit: cover;
+        margin: 0 auto 25px;
+        display: block;
+        transition: 0.3s;
+    }
+
+    .cv-sidebar h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 5px; }
+    .cv-sidebar .profession { color: var(--cv-primary); font-size: 0.9rem; margin-bottom: 30px; display: block; }
+    
+    .sidebar-section { margin-bottom: 30px; }
+    .sidebar-section h3 { 
+        font-size: 1.1rem; 
+        text-transform: uppercase; 
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding-bottom: 8px;
+        margin-bottom: 15px;
+        color: var(--cv-primary);
+    }
+
+    /* Columna Principal */
+    .cv-main {
+        flex: 2;
+        min-width: 500px;
+        padding: 60px;
+        background: white;
+    }
+
+    .main-section { margin-bottom: 40px; }
+    .main-section h2 { 
+        font-size: 1.8rem; 
+        color: var(--cv-dark); 
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Línea de tiempo para Experiencia */
+    .timeline-item {
+        padding-left: 25px;
+        border-left: 2px solid #e9ecef;
+        position: relative;
+        margin-bottom: 25px;
+    }
+
+    .timeline-item::before {
+        content: "";
+        position: absolute;
+        left: -9px;
+        top: 5px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--cv-primary);
+    }
+
+    .timeline-date { font-size: 0.85rem; color: #999; font-weight: 600; }
+    .timeline-title { font-size: 1.2rem; font-weight: 700; color: var(--cv-dark); margin: 5px 0; }
+    
+    .project-card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 15px;
+        border-left: 4px solid var(--cv-primary);
+        margin-bottom: 15px;
+    }
+
+    @media (max-width: 768px) {
+        .cv-wrapper { flex-direction: column; }
+        .cv-main { padding: 30px; }
+    }
+</style>
+
+<div class="cv-wrapper">
+    <aside class="cv-sidebar text-center text-md-start">
+        {% if perfil.foto %}
+            <img src="{{ perfil.foto.url }}" class="cv-profile-img shadow">
+        {% else %}
+            <img src="https://ui-avatars.com/api/?name={{ perfil.nombres }}&size=200&background=0dcaf0&color=fff" class="cv-profile-img">
+        {% endif %}
+
+        <h2>{{ perfil.nombres }} {{ perfil.apellidos }}</h2>
+        <span class="profession">PERFIL PROFESIONAL</span>
+
+        <div class="mt-3 text-center text-md-start">
+            <a href="{% url 'editar_perfil' %}" class="btn btn-info btn-sm rounded-pill text-white px-4 shadow-sm">
+                <i class="bi bi-pencil-fill"></i> Editar mi Perfil
+            </a>
+        </div>
+        <div class="sidebar-section text-start mt-4">
+            <h3><i class="bi bi-person-lines-fill me-2"></i>Contacto</h3>
+            <p class="small mb-1"><i class="bi bi-card-text me-2"></i>{{ perfil.cedula }}</p>
+            <p class="small mb-1"><i class="bi bi-geo-alt me-2"></i>{{ perfil.direccion_domiciliaria }}</p>
+            <p class="small mb-1"><i class="bi bi-translate me-2"></i>{{ perfil.nacionalidad }}</p>
+        </div>
+
+        <div class="sidebar-section text-start">
+            <h3><i class="bi bi-mortarboard me-2"></i>Cursos</h3>
+            {% for curso in perfil.cursos.all %}
+                <div class="mb-3">
+                    <p class="fw-bold mb-0" style="font-size: 0.9rem;">{{ curso.nombre_curso }}</p>
+                    <small class="text-info">{{ curso.institucion }} ({{ curso.horas }}h)</small>
+                </div>
+            {% endfor %}
+        </div>
+    </aside>
+
+    <main class="cv-main">
+        <section class="main-section">
+            <h2><i class="bi bi-person-workspace text-primary"></i> Perfil Profesional</h2>
+            <p class="text-muted" style="line-height: 1.8;">
+                {{ perfil.perfil_profesional }}
+            </p>
+        </section>
+
+        <section class="main-section">
+            <h2><i class="bi bi-briefcase text-primary"></i> Experiencia Laboral</h2>
+            {% for exp in perfil.experiencias.all %}
+                <div class="timeline-item">
+                    <span class="timeline-date">{{ exp.fecha_inicio }} - {{ exp.fecha_fin|default:"Actualidad" }}</span>
+                    <h4 class="timeline-title">{{ exp.cargo_desempenado }}</h4>
+                    <p class="text-primary fw-bold mb-0">{{ exp.nombre_empresa }}</p>
+                </div>
+            {% empty %}
+                <p class="text-muted small">No hay experiencia registrada aún.</p>
+            {% endfor %}
+        </section>
+
+        <section class="main-section">
+            <h2><i class="bi bi-lightbulb text-primary"></i> Proyectos Destacados</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="fw-bold mb-3">Laborales</h5>
+                    {% for prod in perfil.productos_lab.all %}
+                        <div class="project-card">
+                            <h6 class="fw-bold mb-1">{{ prod.nombre_producto }}</h6>
+                            <p class="small text-muted mb-0">{{ prod.descripcion }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6">
+                    <h5 class="fw-bold mb-3">Académicos</h5>
+                    {% for prod in perfil.productos_acad.all %}
+                        <div class="project-card" style="border-left-color: #2c3e50;">
+                            <h6 class="fw-bold mb-1">{{ prod.nombre_recurso }}</h6>
+                            <p class="small text-muted mb-0">{{ prod.descripcion }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+{% endblock %}

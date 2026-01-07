@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                    url('https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?q=80&w=2070') no-repeat center center fixed;
+        background-size: cover;
+    }
+
+    .edit-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 40px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    }
+
+    .profile-preview {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid #0dcaf0;
+        margin-bottom: 20px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+</style>
+
+<div class="edit-card text-center">
+    <h2 class="fw-bold mb-4"><i class="bi bi-person-gear text-info"></i> Ajustes de Perfil</h2>
+    
+    {% if user.datospersonales.foto %}
+        <img src="{{ user.datospersonales.foto.url }}" class="profile-preview shadow">
+    {% else %}
+        <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=0dcaf0&color=fff" class="profile-preview">
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" class="text-start">
+        {% csrf_token %}
+        
+        <div class="mb-4">
+            <label class="form-label fw-bold">Cambiar Foto de Perfil</label>
+            <input type="file" name="foto" class="form-control">
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">Nombres</label>
+                <input type="text" name="nombres" value="{{ form.nombres.value|default:'' }}" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">Apellidos</label>
+                <input type="text" name="apellidos" value="{{ form.apellidos.value|default:'' }}" class="form-control">
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label small fw-bold">Breve Resumen Profesional</label>
+            <textarea name="perfil_profesional" class="form-control" rows="3">{{ form.perfil_profesional.value|default:'' }}</textarea>
+        </div>
+
+        <div class="d-grid gap-2 mt-4">
+            <button type="submit" class="btn btn-info fw-bold text-white py-2 rounded-pill">
+                <i class="bi bi-save me-2"></i> Guardar Cambios
+            </button>
+            <a href="{% url 'hoja_vida' %}" class="btn btn-outline-secondary btn-sm border-0">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

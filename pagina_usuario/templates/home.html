@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Estilo para la sección principal con fondo de pantalla */
+    .hero-section {
+        position: relative;
+        height: 80vh; /* Ocupa el 80% de la altura de la pantalla */
+        background: url('https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=2072') no-repeat center center/cover;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-align: center;
+        border-radius: 15px;
+        overflow: hidden;
+        margin-top: 20px;
+    }
+
+    /* Superposición oscura para resaltar el texto */
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5); /* Oscurece la imagen un 50% */
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        padding: 20px;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+
+<div class="hero-section shadow-lg">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 class="hero-title">Organiza tu Vida y Carrera</h1>
+        <p class="hero-subtitle">
+            Gestiona tus tareas diarias y mantén tu perfil profesional actualizado en un solo lugar. 
+            La herramienta definitiva para profesionales productivos.
+        </p>
+        
+        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+            {% if not user.is_authenticated %}
+                <a href="{% url 'signup' %}" class="btn btn-primary btn-lg px-4 gap-3">Empezar Ahora</a>
+                <a href="{% url 'signin' %}" class="btn btn-outline-light btn-lg px-4">Iniciar Sesión</a>
+            {% else %}
+                <a href="{% url 'tasks' %}" class="btn btn-primary btn-lg px-4 gap-3">Ver mis Tareas</a>
+                <a href="{% url 'hoja_vida' %}" class="btn btn-light btn-lg px-4">Mi Hoja de Vida</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5 text-center">
+    <div class="col-md-4">
+        <div class="p-3">
+            <h3>📝 Tareas</h3>
+            <p>Añade archivos y marca prioridades a tus actividades.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="p-3">
+            <h3>💼 Perfil</h3>
+            <p>Gestiona tu experiencia laboral y académica fácilmente.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="p-3">
+            <h3>🚀 Rendimiento</h3>
+            <p>Interfaz rápida y moderna para mejorar tu productividad.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
