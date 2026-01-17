@@ -20,7 +20,7 @@ class DatosPersonales(models.Model):
     foto = models.ImageField(upload_to='perfil/', null=True, blank=True)
     nombres = models.CharField(max_length=60)
     apellidos = models.CharField(max_length=60)
-    cedula = models.CharField(max_length=10, unique=True)
+    cedula = models.CharField(max_length=10, unique=True, null=True, blank=True)
     nacionalidad = models.CharField(max_length=20)
     fecha_nacimiento = models.DateField(null=True, blank=True)
     direccion_domiciliaria = models.CharField(max_length=100)

@@ -67,9 +67,8 @@ ROOT_URLCONF = 'mi_proyecto.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # Esta línea buscará la carpeta templates automáticamente
-        'DIRS': [os.path.join(BASE_DIR, 'templates'),
-                 os.path.join(BASE_DIR, 'pagina_usuario', 'templates')],
+        # AQUÍ ESTÁ EL TRUCO:
+        'DIRS': [BASE_DIR / 'pagina_usuario' / 'templates'], 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

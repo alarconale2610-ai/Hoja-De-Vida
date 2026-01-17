@@ -12,7 +12,7 @@
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
         border-radius: 20px;
-        max-width: 600px;
+        max-width: 800px; /* Un poco más ancho para acomodar todo */
         margin: 50px auto;
         padding: 40px;
         box-shadow: 0 15px 35px rgba(0,0,0,0.4);
@@ -27,9 +27,12 @@
         margin-bottom: 20px;
     }
 
-    .form-control {
-        border-radius: 10px;
-        margin-bottom: 15px;
+    .form-section {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
     }
 </style>
 
@@ -44,33 +47,145 @@
 
     <form method="POST" enctype="multipart/form-data" class="text-start">
         {% csrf_token %}
-        
-        <div class="mb-4">
-            <label class="form-label fw-bold">Cambiar Foto de Perfil</label>
-            <input type="file" name="foto" class="form-control">
+
+        <div class="form-section">
+            <h5 class="text-info fw-bold mb-3">Información Básica</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label small fw-bold">Cédula</label>
+                    <input type="text" name="cedula" value="{{ form.cedula.value|default:'' }}" class="form-control">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label small fw-bold">Nacionalidad</label>
+                    <input type="text" name="nacionalidad" value="{{ form.nacionalidad.value|default:'' }}" class="form-control">
+                </div>
+                <div class="mb-3 mt-2">
+                <label class="form-label small fw-bold">Dirección Domiciliaria</label>
+                <input type="text" name="direccion_domiciliaria" value="{{ form.direccion_domiciliaria.value|default:'' }}" class="form-control">
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label small fw-bold">Nombres</label>
+                    <input type="text" name="nombres" value="{{ form.nombres.value|default:'' }}" class="form-control">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label small fw-bold">Apellidos</label>
+                    <input type="text" name="apellidos" value="{{ form.apellidos.value|default:'' }}" class="form-control">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Foto de Perfil</label>
+                <input type="file" name="foto" class="form-control">
+            </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-6">
-                <label class="form-label small fw-bold">Nombres</label>
-                <input type="text" name="nombres" value="{{ form.nombres.value|default:'' }}" class="form-control">
-            </div>
-            <div class="col-md-6">
-                <label class="form-label small fw-bold">Apellidos</label>
-                <input type="text" name="apellidos" value="{{ form.apellidos.value|default:'' }}" class="form-control">
-            </div>
+        <div class="form-section">
+            <h5 class="text-info fw-bold mb-3"><i class="bi bi-briefcase-fill"></i> Experiencia Laboral</h5>
+            {{ formset_exp.management_form }}
+            {% for f in formset_exp %}
+                <div class="row g-2 mb-3 border-bottom pb-3">
+                    {{ f.id }}
+                    <div class="col-md-6">
+                        <label class="small fw-bold">Empresa</label>
+                        <input type="text" name="{{ f.nombre_empresa.html_name }}" value="{{ f.nombre_empresa.value|default:'' }}" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="small fw-bold">Cargo</label>
+                        <input type="text" name="{{ f.cargo_desempenado.html_name }}" value="{{ f.cargo_desempenado.value|default:'' }}" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-5">
+                        <label class="small fw-bold">Inicio</label>
+                        <input type="date" name="{{ f.fecha_inicio.html_name }}" value="{{ f.fecha_inicio.value|default:'' }}" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-5">
+                        <label class="small fw-bold">Fin</label>
+                        <input type="date" name="{{ f.fecha_fin.html_name }}" value="{{ f.fecha_fin.value|default:'' }}" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <label class="small text-danger d-block">¿Borrar?</label>
+                        {{ f.DELETE }}
+                    </div>
+                </div>
+            {% endfor %}
         </div>
 
-        <div class="mb-3">
+        <div class="form-section">
+            <h5 class="text-info fw-bold mb-3"><i class="bi bi-lightbulb-fill"></i> Proyectos Destacados (Laborales)</h5>
+            {{ formset_lab.management_form }}
+            {% for f in formset_lab %}
+                <div class="row g-2 mb-3 border-bottom pb-3">
+                    {{ f.id }}
+                    <div class="col-md-5">
+                        <label class="small fw-bold">Nombre del Proyecto</label>
+                        <input type="text" name="{{ f.nombre_producto.html_name }}" value="{{ f.nombre_producto.value|default:'' }}" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-5">
+                        <label class="small fw-bold">Descripción</label>
+                        <input type="text" name="{{ f.descripcion.html_name }}" value="{{ f.descripcion.value|default:'' }}" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <label class="small text-danger d-block">¿Borrar?</label>
+                        {{ f.DELETE }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-section">
+            <h5 class="text-info fw-bold mb-3"><i class="bi bi-journal-bookmark-fill"></i> Proyectos Destacados (Académicos)</h5>
+            {{ formset_acad.management_form }}
+            {% for f in formset_acad %}
+                <div class="row g-2 mb-3 border-bottom pb-3">
+                    {{ f.id }}
+                    <div class="col-md-5">
+                        <label class="small fw-bold">Nombre del Recurso</label>
+                        <input type="text" name="{{ f.nombre_recurso.html_name }}" value="{{ f.nombre_recurso.value|default:'' }}" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-5">
+                        <label class="small fw-bold">Descripción</label>
+                        <input type="text" name="{{ f.descripcion.html_name }}" value="{{ f.descripcion.value|default:'' }}" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <label class="small text-danger d-block">¿Borrar?</label>
+                        {{ f.DELETE }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-section">
+            <h5 class="text-info fw-bold mb-3"><i class="bi bi-mortarboard-fill"></i> Cursos</h5>
+            {{ formset_cur.management_form }}
+            {% for f in formset_cur %}
+                <div class="row g-2 mb-2 border-bottom pb-2">
+                    {{ f.id }}
+                    <div class="col-md-5">
+                        <label class="small fw-bold">Curso</label>
+                        <input type="text" name="{{ f.nombre_curso.html_name }}" value="{{ f.nombre_curso.value|default:'' }}" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-5">
+                        <label class="small fw-bold">Institución</label>
+                        <input type="text" name="{{ f.institucion.html_name }}" value="{{ f.institucion.value|default:'' }}" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="small fw-bold">Horas</label>
+                        <input type="number" name="{{ f.horas.html_name }}" value="{{ f.horas.value|default:'' }}" class="form-control form-control-sm">
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-section">
             <label class="form-label small fw-bold">Breve Resumen Profesional</label>
             <textarea name="perfil_profesional" class="form-control" rows="3">{{ form.perfil_profesional.value|default:'' }}</textarea>
         </div>
 
         <div class="d-grid gap-2 mt-4">
             <button type="submit" class="btn btn-info fw-bold text-white py-2 rounded-pill">
-                <i class="bi bi-save me-2"></i> Guardar Cambios
+                <i class="bi bi-save me-2"></i> Guardar Todos los Cambios
             </button>
-            <a href="{% url 'hoja_vida' %}" class="btn btn-outline-secondary btn-sm border-0">Cancelar</a>
+            <a href="{% url 'hoja_vida' %}" class="btn btn-outline-secondary btn-sm border-0">Cancelar y Volver</a>
         </div>
     </form>
 </div>
