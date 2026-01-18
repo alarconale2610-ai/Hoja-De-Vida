@@ -7,8 +7,9 @@ from django.db import IntegrityError
 from django.utils import timezone
 from django.forms import inlineformset_factory, widgets
 from django.http import HttpResponse
-from django.template.loader import render_to_string
-from weasyprint import HTML
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from io import BytesIO
 
 # Modelos y Formularios
 from .models import Task, DatosPersonales, ExperienciaLaboral, Curso, ProductoLaboral, ProductoAcademico, Recomendacion
@@ -179,17 +180,20 @@ def editar_perfil(request):
 
 
 def descargar_cv_pdf(request):
-    # Esto renderiza tu HTML a una variable
-    # Cambia 'nombre_de_tu_plantilla.html' por el archivo de tu perfil
-    html_content = render_to_string('perfil.html', {'user': request.user})
+    # 1. Buscamos la plantilla
+    template = get_template('perfil.html') # Asegúrate que este sea el nombre de tu archivo
+    context = {'user': request.user}
+    html = template.render(context)
     
-    # Crea el PDF
-    pdf = HTML(string=html_content, base_url=request.build_absolute_uri()).write_pdf()
+    # 2. Creamos el PDF en memoria
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
     
-    # Devuelve el archivo al navegador
-    response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="CV_Alexander_Alarcon.pdf"'
-    return response
+    # 3. Si no hubo errores, mandamos el archivo
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    
+    return HttpResponse("Error al generar el PDF", status=400)
 
 def helloworld(request):
     return render(request, 'helloworld.html')
