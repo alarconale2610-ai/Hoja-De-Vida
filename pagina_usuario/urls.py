@@ -11,4 +11,5 @@ urlpatterns = [
     path('tasks/<int:task_id>/complete/', views.complete_task, name='complete_task'),
     path('hojavida/', views.hoja_vida, name='hoja_vida'),
     path('perfil/editar/', views.editar_perfil, name='editar_perfil'),
+    path('descargar-cv/', views.descargar_cv_pdf, name='descargar_cv'),
 ]

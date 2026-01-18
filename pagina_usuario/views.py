@@ -6,6 +6,9 @@ from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.utils import timezone
 from django.forms import inlineformset_factory, widgets
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from weasyprint import HTML
 
 # Modelos y Formularios
 from .models import Task, DatosPersonales, ExperienciaLaboral, Curso, ProductoLaboral, ProductoAcademico, Recomendacion
@@ -174,6 +177,19 @@ def editar_perfil(request):
         'formset_acad': formset_acad
     })
 
+
+def descargar_cv_pdf(request):
+    # Esto renderiza tu HTML a una variable
+    # Cambia 'nombre_de_tu_plantilla.html' por el archivo de tu perfil
+    html_content = render_to_string('perfil.html', {'user': request.user})
+    
+    # Crea el PDF
+    pdf = HTML(string=html_content, base_url=request.build_absolute_uri()).write_pdf()
+    
+    # Devuelve el archivo al navegador
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="CV_Alexander_Alarcon.pdf"'
+    return response
 
 def helloworld(request):
     return render(request, 'helloworld.html')
