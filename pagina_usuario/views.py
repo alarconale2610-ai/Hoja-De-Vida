@@ -137,13 +137,16 @@ def editar_perfil(request):
 # --- FUNCIÓN DE DESCARGA PDF RECONSTRUIDA PARA REPORTLAB ---
 @login_required
 def descargar_cv_pdf(request):
+    # 1. Traemos los datos (usando los nombres de campos correctos)
     perfil = DatosPersonales.objects.filter(user=request.user).first()
-    experiencias = ExperienciaLaboral.objects.filter(datos_personales=perfil)
+    # CAMBIO AQUÍ: Usamos 'perfil' en lugar de 'datos_personales'
+    experiencias = ExperienciaLaboral.objects.filter(perfil=perfil)
+    cursos = Curso.objects.filter(perfil=perfil)
     
     buffer = BytesIO()
     p = canvas.Canvas(buffer, pagesize=LETTER)
     
-    # Dibujando el CV
+    # --- Dibujando el CV ---
     p.setFont("Helvetica-Bold", 20)
     p.drawString(100, 750, "HOJA DE VIDA")
     
@@ -158,8 +161,11 @@ def descargar_cv_pdf(request):
         p.drawString(100, y, f"Email: {request.user.email}")
         y -= 20
         p.drawString(100, y, f"Teléfono: {perfil.telefono}")
+        y -= 20
+        p.drawString(100, y, f"Ubicación: {perfil.direccion}")
         y -= 40
 
+    # Experiencia Laboral
     p.setFont("Helvetica-Bold", 13)
     p.drawString(100, y, "EXPERIENCIA LABORAL")
     y -= 20
@@ -171,17 +177,25 @@ def descargar_cv_pdf(request):
         p.setFont("Helvetica-Oblique", 9)
         p.drawString(115, y, f"({exp.fecha_inicio} a {exp.fecha_fin})")
         y -= 25
-        p.setFont("Helvetica", 11)
         if y < 100:
             p.showPage()
             y = 750
+
+    # Cursos
+    y -= 10
+    p.setFont("Helvetica-Bold", 13)
+    p.drawString(100, y, "CURSOS Y FORMACIÓN")
+    y -= 20
+    for c in cursos:
+        p.drawString(100, y, f"• {c.nombre_curso} ({c.institucion}) - {c.horas}h")
+        y -= 20
 
     p.showPage()
     p.save()
     
     buffer.seek(0)
     return HttpResponse(buffer, content_type='application/pdf', 
-                        headers={'Content-Disposition': 'attachment; filename="CV_AlexDev.pdf"'})
+                        headers={'Content-Disposition': 'attachment; filename="CV_Alexander_Alarcon.pdf"'})
 
 def helloworld(request):
     return render(request, 'helloworld.html')
